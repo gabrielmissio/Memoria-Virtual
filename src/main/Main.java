@@ -20,11 +20,21 @@ public class Main {
 		Random gerador = new Random();
 		
 		for(int i = 0; i < numMinCiclos; i++) {
-			int a = gerador.nextInt((200 - 100) + 1) + 100;//((max - min) + 1) + min -> formula para setar o range do numero aleatorio
+			int novoProcesso = gerador.nextInt((1 - 0) + 1) + 0;//((max - min) + 1) + min 
+			if(novoProcesso == 1) {
+				
+				int tamEmCiclos = Processo.getTamEmCiclos(0, 50, gerador);
+				Processo processo = new Processo(i,tamEmCiclos);
+				processos.add(processo);
+				
+			}else {
+				
+			}
+			//System.out.println(a);
 		}
 				
 	
-		System.out.println("trabalho S.O.");
+		System.out.println("trabalho S.O. ");
 	}
 
 }
@@ -54,6 +64,15 @@ class Processo{
 	}
 	public void setTamanho(int tamanho) {
 		this.tamanho = tamanho;
+	}
+	
+	public static int getTamEmCiclos(int min, int max, Random gerador) {
+		int tamEmCiclo = gerador.nextInt((max - min) + 1) + min;
+		if(tamEmCiclo%20 == 0) {//20 = quantom
+			getTamEmCiclos(min, max, gerador);
+		}
+		
+		return tamEmCiclo;
 	}
 	
 }
