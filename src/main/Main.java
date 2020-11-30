@@ -25,7 +25,7 @@ public class Main {
 			int novoProcesso = gerador.nextInt((1 - 0) + 1) + 0;//((max - min) + 1) + min 
 			if(novoProcesso == 1) {
 			
-				int tamEmCiclos = Processo.getTamEmCiclos(0, 50, gerador);
+				int tamEmCiclos = Processo.getTamEmCiclos(1, 50, gerador);
 				Processo processo = new Processo(processos.size()+1, tamEmCiclos);
 				processos.add(processo);
 				System.out.println("Novo Processo iniciado com " + processo.getTamanho() + " ciclos!");
