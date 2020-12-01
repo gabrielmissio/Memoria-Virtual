@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.sound.midi.Soundbank;
-
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		/*
+		 Cada processo ocupa uma pagina!
+		 A memoria virtual é dividida em 5 paginas*
+		 Pode haver até 5 processos na memoria virtual
+		 */
 		final int quantum = 20;//numero maximo que um processo pode consumir sem voltar para a fila
-		final int tamMaxMemoriaFisica = 20;
-		final int tamMaxMemoriaVirtual = 200;
-		final int numPagina = 5;
-		final int numMinCiclos = 100;
-		List<Processo> memoriaVirtual = new ArrayList<Processo>();
-		List<Processo> memoriaFisica = new ArrayList<Processo>();
+		final int tamMaxMemoriaFisica = 20;//parametro não sera utilizado
+		final int tamMaxMemoriaVirtual = 200;//parametro não sera utilizado
+		final int numPaginas = 5;//numero maximo de paginas
+		final int numMinCiclos = 100;//numero minumo de ciclos
+		List<Processo> memoriaVirtual = new ArrayList<Processo>();//os processos que estão armazanados na memoria fisica
+		List<Processo> memoriaFisica = new ArrayList<Processo>();//os processos que estão armazenados na memoria virtual
 		Random gerador = new Random();
 		
 		for(int i = 0; i < numMinCiclos; i++) {
@@ -40,7 +42,7 @@ public class Main {
 					System.out.println("Page fault, verificar se a espaço na memoria virtual para carregar uma nova pagina!");
 					
 					
-					if(memoriaVirtual.size() <= 5) {//há espaço na memoria virtual, carregar processo para a pagina
+					if(memoriaVirtual.size() <= numPaginas) {//há espaço na memoria virtual, carregar processo para a pagina
 						System.out.println("Há espaço na memoria virtual, processo carregado para a pagina N");
 						//verificar em qual pagina o processo sera carregado
 						
@@ -52,13 +54,18 @@ public class Main {
 				}
 				
 				//chama funcao para executar o processo recebendo o processo e as listas, retornando true se o processo foi concluido e false se faltou
-				
+				//------->Geranciador.prcessar
 				
 			}else {
 				System.out.println("Nenhum processo a ser executado no momento!");
 			}
 		
 		}
+		/*
+		while(!memoriaFisica.isEmpty()) {
+			//continuar processando até finalizar todos os processos
+			//----------->Gerenciador.processar
+		}*/
 				
 	
 		System.out.println("trabalho S.O. ");
@@ -67,6 +74,7 @@ public class Main {
 }
 
 /*
+//logica do escalonamento circular para gerenciar os processos
 System.out.println("Executando processo " + memoriaFisica.get(0).getId());
 	memoriaFisica.get(0).setTamanho(memoriaFisica.get(0).getTamanho() - 1);
 	if(memoriaFisica.get(0).getTamanho() > 0) {
@@ -80,11 +88,25 @@ System.out.println("Executando processo " + memoriaFisica.get(0).getId());
 	}
  * */
 
+class Gerenciador{
+	public static boolean processar(List MemoriaVirtual, List memoriaFisica) {
+		
+		/*
+			//se o processo for finalizado
+			return true;
+		*/
+		
+		//se o processo ainda não foi finalizado
+		return false;
+	}
+}
+
 class Processo{
 	
 	int id;
 	int tamanho;
 	String nome;
+	int controleQuantum = 0;
 
 	public Processo(int id, int tamanho) {
 		this.id = id;
@@ -93,6 +115,14 @@ class Processo{
 	
 	public Processo() {
 		
+	}
+	
+	public int getControleQuantum() {
+		return controleQuantum;
+	}
+
+	public void setControleQuantum(int controleQuantum) {
+		this.controleQuantum = controleQuantum;
 	}
 	
 	public String getNome() {
@@ -118,7 +148,7 @@ class Processo{
 	
 	public static int getTamEmCiclos(int min, int max, Random gerador) {
 		int tamEmCiclo = gerador.nextInt((max - min) + 1) + min;
-		if(tamEmCiclo%20 == 0) {//20 = quantom
+		if(tamEmCiclo%20 == 0) {//20 = quantom, o tamanho do cilho não pode ser multiplo de 20
 			getTamEmCiclos(min, max, gerador);
 		}
 		
