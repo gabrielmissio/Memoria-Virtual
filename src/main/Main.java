@@ -11,39 +11,49 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		final int quantum = 20;//numero maximo que um processo pode consumir sem voltar para a fila
-		final int tamMaxMemoriaPrincipal = 200;
-		final int tamMaxMemoriaVirtual = 20;
-		final int tamMaxMemoriaSecundaria = 1000;
+		final int tamMaxMemoriaFisica = 20;
+		final int tamMaxMemoriaVirtual = 200;
+		final int numPagina = 5;
 		final int numMinCiclos = 100;
-		List<Integer> memoriaPrincipal = new ArrayList<>();
-		List<Integer> memoriaSegundaria = new ArrayList<>();
-		List<Integer> memoriaVirtual = new ArrayList<>();
-		List<Processo> processos = new ArrayList<Processo>();
+		List<Processo> memoriaVirtual = new ArrayList<Processo>();
+		List<Processo> memoriaFisica = new ArrayList<Processo>();
 		Random gerador = new Random();
 		
 		for(int i = 0; i < numMinCiclos; i++) {
 			int novoProcesso = gerador.nextInt((1 - 0) + 1) + 0;//((max - min) + 1) + min 
-			if(novoProcesso == 1) {
+			if(novoProcesso == 1) {//verificar se deve ou n„o iniciar um novo processo
 			
-				int tamEmCiclos = Processo.getTamEmCiclos(1, 50, gerador);
-				Processo processo = new Processo(processos.size()+1, tamEmCiclos);
-				processos.add(processo);
-				System.out.println("Novo Processo iniciado com " + processo.getTamanho() + " ciclos!");
+				int tamEmCiclos = Processo.getTamEmCiclos(1, 50, gerador);//receber o numero de ciclos de uma processo entre 1 e 50 que n„o seja multipo de quantum(definido como 20)
+				Processo processo = new Processo(memoriaFisica.size()+1, tamEmCiclos);//gera um nuvo processo com id unico e numero de ciclos aleatorio
+				memoriaFisica.add(processo);//salva o processo na memoria fisica
+				System.out.println("Gerado novo processo com " + processo.getTamanho() + " ciclos!");
 				
 			}
 			
-			if(!processos.isEmpty()) {
-				System.out.println("Executando processo " + processos.get(0).getId());
-				processos.get(0).setTamanho(processos.get(0).getTamanho() - quantum);
-				if(processos.get(0).getTamanho() > 0) {
-					System.out.println("Limite do quantum atindido o processo " + processos.get(0).getId() + " dara espa√ßo para um novo processo...");
-					Processo temp = processos.get(0);
-					processos.remove(0);
-					processos.add(temp);
+			if(!memoriaFisica.isEmpty()) {
+				if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
+					System.out.println("Processo encontrado na pagina N");
+					//verificar em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
+					
+					
 				}else {
-					System.out.println("Finalizando execu√ß√£o do processo " + processos.get(0).getId() + " removendo da memoria princial...");
-					processos.remove(0);
+					System.out.println("Page fault, verificar se a espaÁo na memoria virtual para carregar uma nova pagina!");
+					
+					
+					if(memoriaVirtual.size() <= 5) {//h· espaÁo na memoria virtual, carregar processo para a pagina
+						System.out.println("H· espaÁo na memoria virtual, processo carregado para a pagina N");
+						//verificar em qual pagina o processo sera carregado
+						
+					}else {//n„o h· mais espaÁo na memoria virtual, subtituir pagina
+						System.out.println("N„o h· mais espaÁo na memoria virtual, o processo sera carregado na pagina N");
+						//Rodar algoritimo para esoclher pagina a ser substituida
+						
+					}
 				}
+				
+				//chama funcao para executar o processo recebendo o processo e as listas, retornando true se o processo foi concluido e false se faltou
+				
+				
 			}else {
 				System.out.println("Nenhum processo a ser executado no momento!");
 			}
@@ -55,6 +65,20 @@ public class Main {
 	}
 
 }
+
+/*
+System.out.println("Executando processo " + memoriaFisica.get(0).getId());
+	memoriaFisica.get(0).setTamanho(memoriaFisica.get(0).getTamanho() - 1);
+	if(memoriaFisica.get(0).getTamanho() > 0) {
+		System.out.println("Limite do quantum atindido o processo " + memoriaFisica.get(0).getId() + " dara espa√ßo para um novo processo...");
+		Processo temp = memoriaFisica.get(0);
+		memoriaFisica.remove(0);
+		memoriaFisica.add(temp);
+	}else {
+		System.out.println("Finalizando execu√ß√£o do processo " + memoriaFisica.get(0).getId() + " removendo da memoria princial...");
+		memoriaFisica.remove(0);
+	}
+ * */
 
 class Processo{
 	
