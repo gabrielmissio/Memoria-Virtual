@@ -16,7 +16,8 @@ public class Main {
 		final int tamMaxMemoriaFisica = 20;//parametro não sera utilizado
 		final int tamMaxMemoriaVirtual = 200;//parametro não sera utilizado
 		final int numPaginas = 5;//numero maximo de paginas
-		final int numMinCiclos = 100;//numero minumo de ciclos
+		final int numMinCiclos = 10;//numero minumo de ciclos
+		int numeroDeCiclos = 0;
 		List<Processo> memoriaVirtual = new ArrayList<Processo>();//os processos que estão armazanados na memoria fisica
 		List<Processo> memoriaFisica = new ArrayList<Processo>();//os processos que estão armazenados na memoria virtual
 		Random gerador = new Random();
@@ -31,16 +32,16 @@ public class Main {
 				System.out.println("Gerado novo processo com " + processo.getTamanho() + " ciclos!");
 				
 			}
-			
+			System.out.println("**Executando processo " + memoriaFisica.get(0).getId());
 			if(!memoriaFisica.isEmpty()) {
 				if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
 					int numDaPage = 0;
-					for(int j = 0; j < numPaginas; j++ ) {//verifica em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
+					for(int j = 0; j < memoriaVirtual.size(); j++ ) {//verifica em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
 						if(memoriaVirtual.get(j).equals(memoriaFisica.get(0))) {
 							numDaPage = j+1;
 						}
 					}
-					System.out.println("Processo encontrado na pagina " + numDaPage);
+					System.out.println("Processo " +  memoriaFisica.get(0).getId() +" encontrado na pagina " + numDaPage);
 					//setar atributos para chamada da função posteriormente
 					
 					
@@ -50,8 +51,9 @@ public class Main {
 					
 					if(memoriaVirtual.size() < numPaginas) {//há espaço na memoria virtual, carregar processo para a pagina
 						int numDaPage = memoriaVirtual.size() + 1;
-						System.out.println("Há espaço na memoria virtual, processo carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
+						System.out.println("Há espaço na memoria virtual, processo "+  memoriaFisica.get(0) + "carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
 						// setar atributos para chamda da função posteriormente
+						memoriaVirtual.add(memoriaFisica.get(0));
 						
 						
 					}else {//não há mais espaço na memoria virtual, subtituir pagina mais antiga, escalonamento circular!!!
@@ -62,8 +64,25 @@ public class Main {
 						
 					}
 				}
-				
-				//chama funcao para executar o processo recebendo o processo e as listas, retornando true se o processo foi concluido e false se faltou
+				if(Gerenciador.processar(memoriaFisica.get(0))) {// se o processo foi finalizado
+					//liberar processo da memoria fisica e virtual
+					System.out.println("Processo " + memoriaFisica.get(0).getId() + " Finalizado, liberar espaço na memoria virtual de na memoria fisica...");
+					memoriaVirtual.remove(memoriaFisica.get(0));
+					memoriaFisica.remove(0);
+				}else {
+					if(memoriaFisica.get(0).getControleQuantum() < quantum) {
+						//nada por hora
+						System.out.println("Processo " + memoriaFisica.get(0).getId() + " ainda não finalizado, sendo executado a menos de 20 tempos");
+					}else {
+						System.out.println("Processo " + memoriaFisica.get(0).getId() + " ainda não finalizado, sendo executado a 20 tempos, volta para o final da fila");
+						Processo temp = memoriaFisica.get(0);
+						temp.setControleQuantum(0);
+						memoriaFisica.remove(0);
+						memoriaFisica.add(temp);
+						//recarrega controle de quantum do objeto e manda par ao fim da fila
+						
+					}
+				}
 				//------->Geranciador.prcessar
 				
 			}else {
@@ -71,14 +90,65 @@ public class Main {
 			}
 		
 		}
-		/*
+		
 		while(!memoriaFisica.isEmpty()) {
-			//continuar processando até finalizar todos os processos
-			//----------->Gerenciador.processar
-		}*/
+			System.out.println("**Executando processo " + memoriaFisica.get(0).getId());
+			if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
+				int numDaPage = 0;
+				for(int j = 0; j < memoriaVirtual.size(); j++ ) {//verifica em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
+					if(memoriaVirtual.get(j).equals(memoriaFisica.get(0))) {
+						numDaPage = j+1;
+					}
+				}
+				System.out.println("Processo " +  memoriaFisica.get(0).getId() +" encontrado na pagina " + numDaPage);
+				//setar atributos para chamada da função posteriormente
+				
+				
+			}else {
+				System.out.println("Page fault, verificar se a espaço na memoria virtual para carregar uma nova pagina!");
+				
+				
+				if(memoriaVirtual.size() < numPaginas) {//há espaço na memoria virtual, carregar processo para a pagina
+					int numDaPage = memoriaVirtual.size() + 1;
+					System.out.println("Há espaço na memoria virtual, processo "+  memoriaFisica.get(0).getId() + "carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
+					// setar atributos para chamda da função posteriormente
+					memoriaVirtual.add(memoriaFisica.get(0));
+					
+					
+				}else {//não há mais espaço na memoria virtual, subtituir pagina mais antiga, escalonamento circular!!!
+					memoriaVirtual.remove(0);
+					memoriaVirtual.add(memoriaFisica.get(0));
+					System.out.println("Não há mais espaço na memoria virtual, acionando bluffler circular e sobreescrevendo pagina mais antiga");
+					//setar atributos para chamada da função posteiriomente
+					
+				}
+			}
+			if(Gerenciador.processar(memoriaFisica.get(0))) {// se o processo foi finalizado
+				//liberar processo da memoria fisica e virtual
+				System.out.println("Processo " + memoriaFisica.get(0).getId() + " Finalizado, liberar espaço na memoria virtual de na memoria fisica...");
+				memoriaVirtual.remove(memoriaFisica.get(0));
+				memoriaFisica.remove(0);
+			}else {
+				if(memoriaFisica.get(0).getControleQuantum() < quantum) {
+					//nada por hora
+					System.out.println("Processo " + memoriaFisica.get(0).getId() + " ainda não finalizado, sendo executado a menos de 20 tempos");
+				}else {
+					System.out.println("Processo " + memoriaFisica.get(0).getId() + " ainda não finalizado, sendo executado a 20 tempos, volta para o final da fila");
+					Processo temp = memoriaFisica.get(0);
+					temp.setControleQuantum(0);
+					memoriaFisica.remove(0);
+					memoriaFisica.add(temp);
+					//recarrega controle de quantum do objeto e manda par ao fim da fila
+					
+				}
+			}
+			//------->Geranciador.prcessar
+			
+		
+		}
 				
 	
-		System.out.println("trabalho S.O. ");
+		System.out.println("Todos os processos foram finalizados!!!");
 	}
 
 }
@@ -99,13 +169,13 @@ System.out.println("Executando processo " + memoriaFisica.get(0).getId());
  * */
 
 class Gerenciador{
-	public static boolean processar(List MemoriaVirtual, List memoriaFisica) {
+	public static boolean processar(Processo p) {
 		
-		/*
-			//se o processo for finalizado
+		p.setControleQuantum(p.getControleQuantum() + 1);
+		p.setTamanho(p.getTamanho() -1);
+		if(p.getTamanho() == 0) {//se o processo foi finalizado
 			return true;
-		*/
-		
+		}
 		//se o processo ainda não foi finalizado
 		return false;
 	}
