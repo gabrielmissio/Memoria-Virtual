@@ -34,21 +34,31 @@ public class Main {
 			
 			if(!memoriaFisica.isEmpty()) {
 				if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
-					System.out.println("Processo encontrado na pagina N");
-					//verificar em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
+					int numDaPage = 0;
+					for(int j = 0; j < numPaginas; j++ ) {//verifica em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
+						if(memoriaVirtual.get(j).equals(memoriaFisica.get(0))) {
+							numDaPage = j+1;
+						}
+					}
+					System.out.println("Processo encontrado na pagina " + numDaPage);
+					//setar atributos para chamada da função posteriormente
 					
 					
 				}else {
 					System.out.println("Page fault, verificar se a espaço na memoria virtual para carregar uma nova pagina!");
 					
 					
-					if(memoriaVirtual.size() <= numPaginas) {//há espaço na memoria virtual, carregar processo para a pagina
-						System.out.println("Há espaço na memoria virtual, processo carregado para a pagina N");
-						//verificar em qual pagina o processo sera carregado
+					if(memoriaVirtual.size() < numPaginas) {//há espaço na memoria virtual, carregar processo para a pagina
+						int numDaPage = memoriaVirtual.size() + 1;
+						System.out.println("Há espaço na memoria virtual, processo carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
+						// setar atributos para chamda da função posteriormente
 						
-					}else {//não há mais espaço na memoria virtual, subtituir pagina
-						System.out.println("Não há mais espaço na memoria virtual, o processo sera carregado na pagina N");
-						//Rodar algoritimo para esoclher pagina a ser substituida
+						
+					}else {//não há mais espaço na memoria virtual, subtituir pagina mais antiga, escalonamento circular!!!
+						memoriaVirtual.remove(0);
+						memoriaVirtual.add(memoriaFisica.get(0));
+						System.out.println("Não há mais espaço na memoria virtual, acionando bluffler circular e sobreescrevendo pagina mais antiga");
+						//setar atributos para chamada da função posteiriomente
 						
 					}
 				}
