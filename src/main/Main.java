@@ -16,13 +16,14 @@ public class Main {
 		final int tamMaxMemoriaFisica = 20;//parametro n„o sera utilizado
 		final int tamMaxMemoriaVirtual = 200;//parametro n„o sera utilizado
 		final int numPaginas = 5;//numero maximo de paginas
-		final int numMinCiclos = 10;//numero minumo de ciclos
+		final int numMinCiclos = 30;//numero minumo de ciclos
 		int numeroDeCiclos = 0;
 		List<Processo> memoriaVirtual = new ArrayList<Processo>();//os processos que est„o armazanados na memoria fisica
 		List<Processo> memoriaFisica = new ArrayList<Processo>();//os processos que est„o armazenados na memoria virtual
 		Random gerador = new Random();
 		
 		for(int i = 0; i < numMinCiclos; i++) {
+			numeroDeCiclos++;
 			int novoProcesso = gerador.nextInt((1 - 0) + 1) + 0;//((max - min) + 1) + min 
 			if(novoProcesso == 1) {//verificar se deve ou n„o iniciar um novo processo
 			
@@ -32,8 +33,8 @@ public class Main {
 				System.out.println("Gerado novo processo com " + processo.getTamanho() + " ciclos!");
 				
 			}
-			System.out.println("**Executando processo " + memoriaFisica.get(0).getId());
 			if(!memoriaFisica.isEmpty()) {
+				System.out.println("**Executando processo " + memoriaFisica.get(0).getId());
 				if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
 					int numDaPage = 0;
 					for(int j = 0; j < memoriaVirtual.size(); j++ ) {//verifica em qual pagina(index da list memoriavirtual o processo se encontra e executalo)
@@ -51,7 +52,7 @@ public class Main {
 					
 					if(memoriaVirtual.size() < numPaginas) {//h· espaÁo na memoria virtual, carregar processo para a pagina
 						int numDaPage = memoriaVirtual.size() + 1;
-						System.out.println("H· espaÁo na memoria virtual, processo "+  memoriaFisica.get(0) + "carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
+						System.out.println("H· espaÁo na memoria virtual, processo "+  memoriaFisica.get(0).getId() + " carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
 						// setar atributos para chamda da funÁ„o posteriormente
 						memoriaVirtual.add(memoriaFisica.get(0));
 						
@@ -92,6 +93,7 @@ public class Main {
 		}
 		
 		while(!memoriaFisica.isEmpty()) {
+			numeroDeCiclos++;
 			System.out.println("**Executando processo " + memoriaFisica.get(0).getId());
 			if(memoriaVirtual.contains(memoriaFisica.get(0))) {// apenas vai executando o processo
 				int numDaPage = 0;
@@ -110,7 +112,7 @@ public class Main {
 				
 				if(memoriaVirtual.size() < numPaginas) {//h· espaÁo na memoria virtual, carregar processo para a pagina
 					int numDaPage = memoriaVirtual.size() + 1;
-					System.out.println("H· espaÁo na memoria virtual, processo "+  memoriaFisica.get(0).getId() + "carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
+					System.out.println("H· espaÁo na memoria virtual, processo "+  memoriaFisica.get(0).getId() + " carregado para a pagina " + numDaPage);//verificar em qual pagina o processo sera carregado
 					// setar atributos para chamda da funÁ„o posteriormente
 					memoriaVirtual.add(memoriaFisica.get(0));
 					
@@ -125,7 +127,7 @@ public class Main {
 			}
 			if(Gerenciador.processar(memoriaFisica.get(0))) {// se o processo foi finalizado
 				//liberar processo da memoria fisica e virtual
-				System.out.println("Processo " + memoriaFisica.get(0).getId() + " Finalizado, liberar espaÁo na memoria virtual de na memoria fisica...");
+				System.out.println("Processo " + memoriaFisica.get(0).getId() + " Finalizado, liberar espaÁo na memoria virtual de na memoria fisica... (removida pagina em que se encontrava o processo)");
 				memoriaVirtual.remove(memoriaFisica.get(0));
 				memoriaFisica.remove(0);
 			}else {
@@ -147,27 +149,14 @@ public class Main {
 		
 		}
 				
-	
-		System.out.println("Todos os processos foram finalizados!!!");
+		System.out.println("\n***********************************************");
+		System.out.println("*Todos os processos foram finalizados em " + numeroDeCiclos + " ciclos!!!");
+		System.out.println("***********************************************");
 	}
 
 }
 
-/*
-//logica do escalonamento circular para gerenciar os processos
-System.out.println("Executando processo " + memoriaFisica.get(0).getId());
-	memoriaFisica.get(0).setTamanho(memoriaFisica.get(0).getTamanho() - 1);
-	if(memoriaFisica.get(0).getTamanho() > 0) {
-		System.out.println("Limite do quantum atindido o processo " + memoriaFisica.get(0).getId() + " dara espa√ßo para um novo processo...");
-		Processo temp = memoriaFisica.get(0);
-		memoriaFisica.remove(0);
-		memoriaFisica.add(temp);
-	}else {
-		System.out.println("Finalizando execu√ß√£o do processo " + memoriaFisica.get(0).getId() + " removendo da memoria princial...");
-		memoriaFisica.remove(0);
-	}
- * */
-
+//classe para gerenciar o processo em execuÁ„o
 class Gerenciador{
 	public static boolean processar(Processo p) {
 		
